@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gym Tracker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1b1f24;--muted:#6b7480;--line:#e3e6ea;--accent:#e8590c;--accent-t:#fff;--ok:#2b8a3e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161a;--card:#1d2026;--text:#eceef1;--muted:#98a1ad;--line:#2d3139;--accent:#ff8a4c;--accent-t:#14161a;--ok:#69db7c}}
+:root[data-theme="dark"]{--bg:#14161a;--card:#1d2026;--text:#eceef1;--muted:#98a1ad;--line:#2d3139;--accent:#ff8a4c;--accent-t:#14161a;--ok:#69db7c}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:22px;margin:4px 0 14px}
+nav{display:flex;gap:6px;margin-bottom:14px}
+nav button{flex:1;padding:10px;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;font:inherit;cursor:pointer}
+nav button.on{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+.f{flex:1;min-width:80px}.f2{flex:2;min-width:140px}
+select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+textarea{min-height:170px;resize:vertical}
+.chip{padding:7px 12px;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:99px;font:inherit;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);color:var(--accent-t);border-color:var(--accent);font-weight:600}
+summary{cursor:pointer;font-weight:600}
+.btn{width:100%;margin-top:10px;padding:11px;border:0;border-radius:10px;background:var(--accent);color:var(--accent-t);font:inherit;font-weight:600;cursor:pointer}
+.item{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item small{color:var(--muted)}
+.x{border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px}
+.pb{color:var(--ok);font-size:12px;font-weight:600;margin-left:6px}
+.muted{color:var(--muted)}
+h2{font-size:15px;margin:0 0 8px}
+.stats{display:flex;gap:8px;margin-bottom:12px}
+.stat{flex:1;background:var(--bg);border-radius:10px;padding:8px 10px}
+.stat b{display:block;font-size:18px}
+.chart{overflow-x:auto}
+svg{width:100%;height:auto;display:block}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root:root:root{--bg:#0C0C0E;--card:#1A1A1E;--card2:#242429;--text:#F4F4F5;--muted:#9494A0;--line:#2B2B31;--accent:#FF5A2B;--accent-t:#fff;--orange:#FF8A1F;--red:#F2323F;--grad:linear-gradient(180deg,#EA4A26,#D0162A);color-scheme:dark}
+body{font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:500;background:radial-gradient(120% 50% at 50% -8%,#2b1412 0,#0C0C0E 60%) no-repeat,var(--bg);background-color:var(--bg);color:var(--text)}
+main{max-width:520px;padding:18px 14px 130px}
+header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+h1{font:700 26px/1 "Chakra Petch",sans-serif;margin:0 0 5px}
+#hi{margin:0;color:var(--muted);font-size:13px}
+.dt{display:flex;align-items:baseline;gap:6px;font:700 15px/1 "Chakra Petch",sans-serif}
+#dd{font-size:42px;color:var(--red)}
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:12px;margin-bottom:18px}
+.hero .card{margin:0;padding:14px}
+.digits{font:700 clamp(28px,9vw,38px)/1 "Chakra Petch",sans-serif;color:var(--orange);text-shadow:0 0 18px rgba(255,138,31,.35)}
+.cap{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px;margin-top:10px}
+#tgo{width:30px;height:30px;padding:0;border-radius:50%;border:1.5px solid var(--orange);background:none;color:var(--orange);font-size:12px;cursor:pointer}
+.big{font:700 clamp(22px,7vw,30px)/1.05 "Chakra Petch",sans-serif;color:var(--red);word-break:break-word}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:16px;box-shadow:0 12px 28px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05)}
+h2{font:700 17px/1.1 "Chakra Petch",sans-serif;margin:0 0 12px;padding-left:10px;border-left:3px solid var(--red)}
+h2 small{display:block;font:500 12px "DM Sans",sans-serif;color:var(--muted);margin-top:5px}
+nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(492px,calc(100% - 28px));z-index:5;margin:0;padding:6px;gap:4px;background:var(--grad);border-radius:30px;box-shadow:0 12px 30px rgba(208,22,42,.45),inset 0 1px 0 rgba(255,255,255,.3)}
+nav button{border:0;background:none;border-radius:24px;padding:8px 2px;font:700 11px/1.2 "DM Sans",sans-serif;color:#fff}
+nav button span{display:block;font-size:19px;margin-bottom:2px}
+nav button.on{background:#141417}
+label{font-size:12px;color:var(--muted);font-weight:500}
+input,select,textarea{background:#101013;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:11px;font:500 16px "DM Sans",sans-serif}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:1px}
+.btn{background:var(--grad);color:#fff;border:0;border-radius:16px;padding:14px;font:700 16px "Chakra Petch","DM Sans",sans-serif;letter-spacing:.03em;box-shadow:0 8px 20px rgba(208,22,42,.4),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .08s}
+.btn:active{transform:scale(.98)}
+.item{border-top:1px solid var(--line);padding:12px 0}
+#dayList .item{background:var(--card2);border:0;border-left:4px solid var(--red);border-radius:14px;padding:12px;margin-bottom:8px}
+.x{width:32px;height:32px;padding:0;border-radius:50%;border:1px solid var(--line);background:none;color:var(--muted);font-size:18px;line-height:1}
+.x:hover{background:var(--red);color:#fff}
+.pb{display:inline-block;background:rgba(255,138,31,.15);color:var(--orange);border:1px solid var(--orange);border-radius:99px;padding:0 8px;font-size:11px;font-weight:700}
+.pb::before{content:"\1F525 "}
+.stat{background:var(--card2);border-radius:14px}
+.stat b{font:700 20px "Chakra Petch",sans-serif;color:var(--orange)}
+.chip{border:1px solid var(--line);background:var(--card2);color:var(--text);font-weight:700}
+.chip.on{background:var(--grad);border-color:transparent;color:#fff}
+.chart svg path{stroke:var(--orange);stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.chart svg circle{stroke:var(--card);stroke-width:2}
+.chart svg line{stroke:var(--line)}
+.rings{display:flex;justify-content:space-around;gap:8px;margin:2px 0 14px}
+.rg{text-align:center}.rg svg{width:92px}
+.rg small{display:block;color:var(--muted);font-size:12px}
+.rt{fill:none;stroke:var(--card2);stroke-width:11}
+.rf{fill:none;stroke-width:11;stroke-linecap:round}
+.rv{fill:var(--text);font:700 22px "Chakra Petch",sans-serif}
+summary{font-weight:700}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><div><h1>Gym log</h1><p id="hi"></p></div><div class="dt"><span id="dd"></span><span id="dm"></span></div></header>
+<div class="hero"><div class="card"><div class="digits" id="clock">00:00</div><div class="cap">Time in gym<button id="tgo" aria-label="Start gym timer">▶</button></div></div><div class="card"><div class="big" id="split">Rest</div><div class="cap">Today’s focus</div></div></div>
+<nav id="nav">
+  <button data-t="workout" class="on"><span>💪</span>Workout</button>
+  <button data-t="weight"><span>⚖️</span>Weight</button>
+  <button data-t="diet"><span>🥗</span>Diet</button>
+  <button data-t="history"><span>🏆</span>History</button>
+</nav>
+
+<section id="workout">
+  <div class="card">
+    <div class="row">
+      <div class="f"><label for="wd">Date</label><input type="date" id="wd"></div>
+      <div class="f2"><label for="ex">Exercise</label><input id="ex" list="exl" placeholder="e.g. Bench press" autocomplete="off"></div>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <div class="f"><label for="st">Sets</label><input id="st" type="number" inputmode="numeric" min="1" placeholder="3"></div>
+      <div class="f"><label for="rp">Reps</label><input id="rp" type="number" inputmode="numeric" min="1" placeholder="10"></div>
+      <div class="f"><label for="wt">Weight (kg)</label><input id="wt" type="number" inputmode="decimal" min="0" step="0.5" placeholder="40"></div>
+    </div>
+    <div style="margin-top:8px"><label for="bp">Body part (diet ke liye)</label><select id="bp"><option>Chest</option><option>Back</option><option>Shoulders</option><option>Arms</option><option>Legs</option></select></div>
+    <datalist id="exl"></datalist>
+    <button class="btn" id="addEx">Add exercise</button>
+  </div>
+  <div class="card"><h2 id="dayTitle">Today</h2><div class="rings" id="rings"></div><div id="dayList"></div></div>
+</section>
+
+<section id="weight" hidden>
+  <div class="card">
+    <div class="row">
+      <div class="f"><label for="bd">Date</label><input type="date" id="bd"></div>
+      <div class="f"><label for="bw">Body weight (kg)</label><input id="bw" type="number" inputmode="decimal" step="0.1" placeholder="70.5"></div>
+    </div>
+    <button class="btn" id="addW">Save weight</button>
+  </div>
+  <div class="card">
+    <div class="stats" id="wstats"></div>
+    <div class="chart" id="chart"></div>
+  </div>
+  <div class="card"><h2>Weight log</h2><div id="wlist"></div></div>
+</section>
+
+<section id="diet" hidden>
+  <div class="card"><h2>Aaj ka diet plan</h2><div class="muted" id="dtrained" style="margin-bottom:10px"></div><div class="row" id="dchips"></div></div>
+  <div class="card"><h2 id="dtitle"></h2><div id="dlist"></div></div>
+  <div class="card"><details><summary>Apna diet customize karo</summary><p class="muted" style="margin:8px 0">Har line = ek meal. Format: Meal ka naam: items</p><textarea id="dtext"></textarea><button class="btn" id="dsave">Save</button><button class="btn" id="dreset" style="background:var(--line);color:var(--text)">Default par wapas</button></details></div>
+  <div class="muted" style="font-size:12px">Ye ek general guide hai, doctor ya dietitian ki salah nahi. Apni body, budget aur allergy ke hisaab se badlo.</div>
+</section>
+
+<section id="history" hidden>
+  <div class="card"><h2>Personal bests</h2><div id="pbs"></div></div>
+  <div id="hist"></div>
+</section>
+</main>
+
+<script>
+(function(){
+var KEY="gymtracker.v1";
+var data={workouts:[],weights:[],diet:{}};
+function load(){try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);if(d&&d.workouts&&d.weights){data=d;data.diet=data.diet||{};}}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
+function $(id){return document.getElementById(id)}
+function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function fmtDate(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2]).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short",year:"numeric"})}
+function num(v){return parseFloat(v)}
+function best(){var b={};data.workouts.forEach(function(w){var k=w.name.toLowerCase();if(!b[k]||w.kg>b[k].kg)b[k]={name:w.name,kg:w.kg,date:w.date}});return b}
+
+function renderWorkout(){
+  var d=$("wd").value||today();
+  $("dayTitle").textContent=d===today()?"Today’s workout":fmtDate(d);
+  var items=data.workouts.filter(function(w){return w.date===d});
+  var pb=best();
+  $("dayList").innerHTML=items.length?items.map(function(w){
+    var isPb=pb[w.name.toLowerCase()]&&pb[w.name.toLowerCase()].kg===w.kg&&w.kg>0&&pb[w.name.toLowerCase()].date===w.date;
+    return '<div class="item"><div><b>'+esc(w.name)+'</b>'+(isPb?'<span class="pb">PB</span>':'')+'<br><small>'+w.sets+' × '+w.reps+' @ '+w.kg+' kg · volume '+(w.sets*w.reps*w.kg)+' kg</small></div><button class="x" data-del="'+w.id+'" aria-label="Delete">×</button></div>'
+  }).join(""):'<div class="muted">Nothing logged for this day yet.</div>';
+  var names={};data.workouts.forEach(function(w){names[w.name]=1});
+  $("exl").innerHTML=Object.keys(names).map(function(n){return '<option value="'+esc(n)+'">'}).join("");
+}
+
+function renderWeight(){
+  var ws=data.weights.slice().sort(function(a,b){return a.date<b.date?-1:1});
+  var st="";
+  if(ws.length){
+    var cur=ws[ws.length-1].kg,first=ws[0].kg,ch=(cur-first).toFixed(1);
+    st='<div class="stat"><small class="muted">Current</small><b>'+cur+' kg</b></div><div class="stat"><small class="muted">Change</small><b>'+(ch>0?"+":"")+ch+' kg</b></div><div class="stat"><small class="muted">Entries</small><b>'+ws.length+'</b></div>';
+  }
+  $("wstats").innerHTML=st;
+  $("chart").innerHTML=ws.length>1?chart(ws):'<div class="muted">Log at least two weigh-ins to see your trend.</div>';
+  $("wlist").innerHTML=ws.length?ws.slice().reverse().map(function(w){
+    return '<div class="item"><div><b>'+w.kg+' kg</b><br><small>'+fmtDate(w.date)+'</small></div><button class="x" data-delw="'+w.id+'" aria-label="Delete">×</button></div>'
+  }).join(""):'<div class="muted">No weigh-ins yet.</div>';
+}
+
+function chart(ws){
+  var W=600,H=220,p=34,vals=ws.map(function(w){return w.kg});
+  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);
+  if(mx-mn<1){mx+=0.5;mn-=0.5}
+  var pts=ws.map(function(w,i){return[p+i*(W-2*p)/(ws.length-1),H-p-(w.kg-mn)/(mx-mn)*(H-2*p)]});
+  var path=pts.map(function(q,i){return(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)}).join(" ");
+  var dots=pts.map(function(q){return '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="3.5" fill="var(--accent)"/>'}).join("");
+  var t='<text x="4" y="'+(p+4)+'" font-size="12" fill="var(--muted)">'+mx.toFixed(1)+'</text><text x="4" y="'+(H-p+4)+'" font-size="12" fill="var(--muted)">'+mn.toFixed(1)+'</text>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Body weight over time"><line x1="'+p+'" y1="'+(H-p)+'" x2="'+(W-p)+'" y2="'+(H-p)+'" stroke="var(--line)"/><path d="'+path+'" fill="none" stroke="var(--accent)" stroke-width="2.5"/>'+dots+t+'</svg>';
+}
+
+function renderHistory(){
+  var pb=best(),k=Object.keys(pb);
+  $("pbs").innerHTML=k.length?k.sort().map(function(n){return '<div class="item"><b>'+esc(pb[n].name)+'</b><span>'+pb[n].kg+' kg <small class="muted">· '+fmtDate(pb[n].date)+'</small></span></div>'}).join(""):'<div class="muted">Your best lifts will show here.</div>';
+  var dates={};data.workouts.forEach(function(w){(dates[w.date]=dates[w.date]||[]).push(w)});
+  var ds=Object.keys(dates).sort().reverse();
+  $("hist").innerHTML=ds.map(function(d){
+    var vol=dates[d].reduce(function(a,w){return a+w.sets*w.reps*w.kg},0);
+    return '<div class="card"><h2>'+fmtDate(d)+' <small class="muted">· '+dates[d].length+' exercises · '+vol+' kg total</small></h2>'+dates[d].map(function(w){return '<div class="item"><div><b>'+esc(w.name)+'</b><br><small>'+w.sets+' × '+w.reps+' @ '+w.kg+' kg</small></div><button class="x" data-del="'+w.id+'" aria-label="Delete">×</button></div>'}).join("")+'</div>'
+  }).join("")||'<div class="muted">No workouts logged yet.</div>';
+}
+
+var PARTS=["Chest","Back","Shoulders","Arms","Legs","Rest"];
+var DEF={
+"Chest":"Pre-workout (1 ghanta pehle): 2 banana + 1 glass doodh ya 1 scoop whey\nPost-workout: Whey shake ya 4 egg whites + 1 banana\nLunch: 2-3 roti + 1 bowl dal + paneer ya chicken 150g + sabzi + salad\nEvening: Roasted chana ya peanuts + 1 fruit\nDinner: Grilled chicken, paneer ya soya chunks + sabzi + 1-2 roti\nSone se pehle: 1 glass doodh ya dahi",
+"Back":"Pre-workout: Oats ya poha + 1 banana\nPost-workout: Whey shake ya 3-4 anday + 1 fruit\nLunch: Chawal ya roti + dal + chicken/fish ya paneer 150g + salad\nEvening: Sprouts chaat ya dry fruits ki mutthi\nDinner: Egg bhurji ya grilled chicken + sabzi + 1-2 roti\nSone se pehle: Doodh ya dahi",
+"Shoulders":"Pre-workout: Banana + peanut butter toast\nPost-workout: Whey shake + 1 fruit\nLunch: 2 roti + dal + chicken ya paneer + sabzi + salad\nEvening: Roasted makhana ya chana + nariyal paani\nDinner: Soya chunks, paneer ya fish + sabzi + roti\nSone se pehle: 1 glass doodh",
+"Arms":"Pre-workout: 2 banana + black coffee (optional)\nPost-workout: Whey shake ya 4 egg whites\nLunch: Roti/chawal + dal + chicken ya paneer 150g + dahi\nEvening: Peanuts, boiled chana ya 1 fruit\nDinner: Anday ya grilled chicken + sabzi + 1-2 roti\nSone se pehle: Doodh ya Greek yogurt",
+"Legs":"Pre-workout: Oats + banana + shahad (carbs zyada lo)\nPost-workout: Whey shake + 2 banana ya 1 chhota aloo/sweet potato\nLunch: 1.5 cup chawal + dal + chicken ya paneer 150-200g + sabzi\nEvening: Fruit + dry fruits + dahi\nDinner: Chicken/fish ya paneer + chawal ya 2 roti + sabzi\nSone se pehle: Doodh + 1 kela\nPaani: Aaj extra paani piyo (3.5-4 litre)",
+"Rest":"Breakfast: Anday ya paneer bhurji + 1-2 roti ya oats\nLunch: 2 roti + dal + sabzi + chicken ya paneer 120-150g + salad\nEvening: Fruit + roasted chana ya makhana\nDinner: Halka - sabzi + dal/chicken/paneer + 1 roti\nSone se pehle: Doodh ya dahi\nNote: Protein wahi rakho, carbs thode kam kar do"
+};
+var dietSel=null;
+function trainedToday(){var s={};data.workouts.forEach(function(w){if(w.date===today()&&w.part)s[w.part]=1});return Object.keys(s)}
+function renderDiet(){
+  var tr=trainedToday();
+  if(!dietSel||PARTS.indexOf(dietSel)<0)dietSel=tr[0]||"Rest";
+  $("dtrained").textContent=tr.length?"Aaj ka workout: "+tr.join(", ")+". Neeche uska diet hai.":"Aaj abhi koi workout log nahi hua, isliye Rest day diet dikh raha hai.";
+  $("dchips").innerHTML=PARTS.map(function(p){return '<button class="chip'+(p===dietSel?' on':'')+'" data-part="'+p+'">'+(tr.indexOf(p)>-1?'✓ ':'')+p+'</button>'}).join("");
+  var text=data.diet[dietSel]||DEF[dietSel];
+  $("dtitle").textContent=dietSel==="Rest"?"Rest day diet":dietSel+" day diet";
+  $("dlist").innerHTML=text.split("\n").filter(function(l){return l.trim()}).map(function(l){
+    var i=l.indexOf(":"),m=i>0?l.slice(0,i):"",it=i>0?l.slice(i+1):l;
+    return '<div class="item"><div>'+(m?'<b>'+esc(m)+'</b><br>':'')+'<small>'+esc(it.trim())+'</small></div></div>'
+  }).join("");
+  $("dtext").value=text;
+}
+$("dchips").addEventListener("click",function(e){var p=e.target.getAttribute("data-part");if(p){dietSel=p;renderDiet()}});
+$("dsave").addEventListener("click",function(){var v=$("dtext").value.trim();if(v)data.diet[dietSel]=v;else delete data.diet[dietSel];save();renderDiet()});
+$("dreset").addEventListener("click",function(){delete data.diet[dietSel];save();renderDiet()});
+function ring(p,c,v,l){var R=34,C=2*Math.PI*R;p=Math.max(0,Math.min(1,p));return '<div class="rg"><svg viewBox="0 0 90 90" role="img" aria-label="'+l+' '+v+'"><circle cx="45" cy="45" r="'+R+'" class="rt"/><circle cx="45" cy="45" r="'+R+'" class="rf" style="stroke:'+c+';stroke-dasharray:'+(C*p).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 45 45)"/><text x="45" y="53" text-anchor="middle" class="rv">'+v+'</text></svg><small>'+l+'</small></div>'}
+function renderHero(){
+  var d=$("wd").value||today(),it=data.workouts.filter(function(w){return w.date===d});
+  var sets=it.reduce(function(a,w){return a+w.sets},0);
+  $("rings").innerHTML=ring(it.length/6,"#FF8A1F",it.length,"Exercises")+ring(sets/18,"#F2323F",sets,"Sets");
+  var tr=trainedToday();$("split").textContent=tr.length?tr.join(" + "):"Rest";
+  var n=new Date();$("dd").textContent=n.getDate();$("dm").textContent=n.toLocaleDateString("en",{month:"short"}).toUpperCase()+"\u2019"+String(n.getFullYear()).slice(2);
+}
+var TK="gymtracker.timer",tStart=0,tInt=null;
+try{tStart=+localStorage.getItem(TK)||0}catch(e){}
+function pad(n){return n<10?"0"+n:""+n}
+function tick(){var s=tStart?Math.floor((Date.now()-tStart)/1000):0,h=Math.floor(s/3600),m=Math.floor(s%3600/60);$("clock").textContent=(h?h+":":"")+pad(m)+":"+pad(s%60)}
+function tbtn(on){$("tgo").textContent=on?"\u25A0":"\u25B6";$("tgo").setAttribute("aria-label",on?"Stop gym timer":"Start gym timer")}
+function tgl(){
+  if(tStart){clearInterval(tInt);tStart=0;try{localStorage.removeItem(TK)}catch(e){}tbtn(false)}
+  else{tStart=Date.now();try{localStorage.setItem(TK,String(tStart))}catch(e){}tInt=setInterval(tick,1000);tick();tbtn(true)}
+}
+$("tgo").addEventListener("click",tgl);
+if(tStart){tInt=setInterval(tick,1000);tick();tbtn(true)}
+function renderAll(){renderWorkout();renderWeight();renderDiet();renderHistory();renderHero();
+  var n=data.workouts.filter(function(w){return w.date===today()}).length;
+  $("hi").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"short"})+" · "+(n?n+" exercise"+(n>1?"s":"")+" done today":"nothing logged yet, let’s go");
+}
+
+$("nav").addEventListener("click",function(e){
+  var t=e.target.getAttribute("data-t");if(!t)return;
+  ["workout","weight","diet","history"].forEach(function(s){$(s).hidden=s!==t});
+  Array.prototype.forEach.call($("nav").children,function(b){b.classList.toggle("on",b.getAttribute("data-t")===t)});
+});
+$("wd").addEventListener("change",function(){renderWorkout();renderHero()});
+$("addEx").addEventListener("click",function(){
+  var n=$("ex").value.trim(),s=num($("st").value),r=num($("rp").value),k=num($("wt").value);
+  if(!n||!(s>0)||!(r>0)||isNaN(k)){alert("Please fill in exercise, sets, reps and weight.");return}
+  data.workouts.push({id:uid(),date:$("wd").value||today(),name:n,part:$("bp").value,sets:s,reps:r,kg:k});
+  save();$("ex").value="";$("st").value="";$("rp").value="";$("wt").value="";renderAll();$("ex").focus();
+});
+$("addW").addEventListener("click",function(){
+  var k=num($("bw").value);
+  if(isNaN(k)||k<=0){alert("Enter your body weight.");return}
+  var d=$("bd").value||today();
+  data.weights=data.weights.filter(function(w){return w.date!==d});
+  data.weights.push({id:uid(),date:d,kg:k});
+  save();$("bw").value="";renderAll();
+});
+document.addEventListener("click",function(e){
+  var a=e.target.getAttribute&&e.target.getAttribute("data-del"),b=e.target.getAttribute&&e.target.getAttribute("data-delw");
+  if(a){data.workouts=data.workouts.filter(function(w){return w.id!==a});save();renderAll()}
+  if(b){data.weights=data.weights.filter(function(w){return w.id!==b});save();renderAll()}
+});
+
+load();$("wd").value=today();$("bd").value=today();renderAll();
+})();
+</script>
+</body>
+</html>
